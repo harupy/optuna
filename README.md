@@ -99,4 +99,4 @@ Takuya Akiba, Shotaro Sano, Toshihiko Yanase, Takeru Ohta, and Masanori Koyama. 
 Optuna: A Next-generation Hyperparameter Optimization Framework. In KDD ([arXiv](https://arxiv.org/abs/1907.10902)).
 
 # Binder
-https://mybinder.org/v2/gh/harupy/optuna/add-binder?filepath=examples%2Fvisualization%2Fplot_intermediate_values.ipynb
+https://mybinder.org/v2/gh/harupy/optuna/add-binder?filepath=examples%2Fquickstart.ipynb
