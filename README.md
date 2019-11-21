@@ -81,6 +81,12 @@ $ pip install optuna
 
 Optuna supports Python 2.7 and Python 3.5 or newer.
 
+## Quick Start
+
+Click the button below to open a live notebook on Binder.
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/harupy/optuna/add-binder?filepath=examples%2Fquickstart.ipynb)
+
 
 ## Contribution
 
@@ -97,6 +103,3 @@ MIT License (see [LICENSE](./LICENSE)).
 
 Takuya Akiba, Shotaro Sano, Toshihiko Yanase, Takeru Ohta, and Masanori Koyama. 2019.
 Optuna: A Next-generation Hyperparameter Optimization Framework. In KDD ([arXiv](https://arxiv.org/abs/1907.10902)).
-
-# Binder
-https://mybinder.org/v2/gh/harupy/optuna/add-binder?filepath=examples%2Fquickstart.ipynb
