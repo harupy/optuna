@@ -1,2 +1,1 @@
-pip install optuna
-pip install sklearn
+pip install optuna sklearn plotly
