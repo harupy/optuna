@@ -13,7 +13,6 @@ on:
 env:
   DOCKER_BASE_NAME: docker.pkg.github.com/${{ github.repository }}/optuna
   DOCKER_HUB_BASE_NAME: harupy/optuna
-  DOCKER_BUILDKIT: 1
 
 jobs:
   build:
