@@ -10,7 +10,15 @@ RUN apt-get update \
     && pip install --no-cache-dir --progress-bar off -U setuptools
 
 WORKDIR /workspaces
-COPY . .
+
+RUN mkdir optuna \
+    && touch optuna/version.py \
+    && echo '__version__ = "0.0.1"' >> optuna/version.py \
+    && cat  optuna/version.py \
+    && touch README.md
+COPY setup.py .
+
+RUN ls
 
 ARG BUILD_TYPE='dev'
 
@@ -24,3 +32,9 @@ RUN if [ "${BUILD_TYPE}" = "dev" ]; then \
         pip install --no-cache-dir -e .; \
     fi \
     && pip install jupyter notebook
+
+# Note that optuna is installed in "editable" mode
+# so any changes under the optuna directory will be reflected on the installed optuna.
+COPY . .
+
+RUN python -c "import optuna; print(optuna.__version__)"
