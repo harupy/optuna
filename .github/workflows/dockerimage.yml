@@ -13,6 +13,7 @@ on:
 env:
   DOCKER_BASE_NAME: docker.pkg.github.com/${{ github.repository }}/optuna
   DOCKER_HUB_BASE_NAME: harupy/optuna
+  DOCKER_BUILDKIT: 1
 
 jobs:
   build:
@@ -39,7 +40,7 @@ jobs:
           fi
           echo "::set-env name=HUB_TAG::${DOCKER_HUB_BASE_NAME}:${TAG_NAME}"
 
-      - run: ls
+      - run: ls -a
 
       - name: Pull the Docker image
         run: |
