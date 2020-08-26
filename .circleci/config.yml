@@ -99,6 +99,7 @@ jobs:
             . venv/bin/activate
             pip install -U pip
             pip install --progress-bar off .[doctest,document]
+            pip install git+https://github.com/harupy/sphinx.git@304-plus
 
       - run:
           name: build
