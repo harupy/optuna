@@ -106,6 +106,7 @@ jobs:
             . venv/bin/activate
             cd docs
             make doctest
+            make doctest
 
   # Unit tests
 
