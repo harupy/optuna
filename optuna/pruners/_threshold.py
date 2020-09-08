@@ -15,7 +15,7 @@ def _check_value(value: Any) -> float:
         message = "The `value` argument is of type '{}' but supposed to be a float.".format(
             type(value).__name__
         )
-        raise TypeError(message)
+        raise TypeError(message) from None
 
     return value
 
@@ -118,7 +118,7 @@ class ThresholdPruner(BasePruner):
             return False
 
         n_warmup_steps = self._n_warmup_steps
-        if step <= n_warmup_steps:
+        if step < n_warmup_steps:
             return False
 
         if not _is_first_in_interval_step(

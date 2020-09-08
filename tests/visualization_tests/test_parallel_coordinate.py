@@ -3,15 +3,12 @@ import pytest
 from optuna.distributions import CategoricalDistribution
 from optuna.study import create_study
 from optuna.testing.visualization import prepare_study_with_trials
-from optuna import type_checking
+from optuna.trial import create_trial
+from optuna.trial import Trial
 from optuna.visualization import plot_parallel_coordinate
 
-if type_checking.TYPE_CHECKING:
-    from optuna.trial import Trial  # NOQA
 
-
-def test_plot_parallel_coordinate():
-    # type: () -> None
+def test_plot_parallel_coordinate() -> None:
 
     # Test with no trial.
     study = create_study()
@@ -48,8 +45,7 @@ def test_plot_parallel_coordinate():
         plot_parallel_coordinate(study, params=["optuna", "optuna"])
 
     # Ignore failed trials.
-    def fail_objective(_):
-        # type: (Trial) -> float
+    def fail_objective(_: Trial) -> float:
 
         raise ValueError
 
@@ -60,21 +56,25 @@ def test_plot_parallel_coordinate():
 
     # Test with categorical params that cannot be converted to numeral.
     study_categorical_params = create_study()
-    study_categorical_params._append_trial(
-        value=0.0,
-        params={"category_a": "preferred", "category_b": "net",},
-        distributions={
-            "category_a": CategoricalDistribution(("preferred", "opt")),
-            "category_b": CategoricalDistribution(("net", "una")),
-        },
+    study_categorical_params.add_trial(
+        create_trial(
+            value=0.0,
+            params={"category_a": "preferred", "category_b": "net"},
+            distributions={
+                "category_a": CategoricalDistribution(("preferred", "opt")),
+                "category_b": CategoricalDistribution(("net", "una")),
+            },
+        )
     )
-    study_categorical_params._append_trial(
-        value=2.0,
-        params={"category_a": "opt", "category_b": "una",},
-        distributions={
-            "category_a": CategoricalDistribution(("preferred", "opt")),
-            "category_b": CategoricalDistribution(("net", "una")),
-        },
+    study_categorical_params.add_trial(
+        create_trial(
+            value=2.0,
+            params={"category_a": "opt", "category_b": "una"},
+            distributions={
+                "category_a": CategoricalDistribution(("preferred", "opt")),
+                "category_b": CategoricalDistribution(("net", "una")),
+            },
+        )
     )
     figure = plot_parallel_coordinate(study_categorical_params)
     assert len(figure.data[0]["dimensions"]) == 3

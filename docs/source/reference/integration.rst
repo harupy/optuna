@@ -1,73 +1,149 @@
-.. module:: optuna.integration
+.. _integration_list:
 
 optuna.integration
 ==================
 
-.. autoclass:: ChainerPruningExtension
-    :members:
+AllenNLP
+--------
 
-.. autoclass:: ChainerMNStudy
-    :members:
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
 
-.. autoclass:: PyCmaSampler
-    :members:
-    :exclude-members: infer_relative_search_space, sample_relative, sample_independent
+   optuna.integration.AllenNLPExecutor
+   optuna.integration.allennlp.dump_best_config
+   optuna.integration.AllenNLPPruningCallback
 
-.. autoclass:: CmaEsSampler
-    :members:
-    :exclude-members: infer_relative_search_space, sample_relative, sample_independent
+Catalyst
+--------
 
-.. autoclass:: FastAIPruningCallback
-    :members:
-    :exclude-members: on_epoch_end
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
 
-.. autoclass:: PyTorchIgnitePruningHandler
-    :members:
+   optuna.integration.CatalystPruningCallback
 
-.. autoclass:: KerasPruningCallback
-    :members:
+Chainer
+-------
 
-.. autoclass:: LightGBMPruningCallback
-    :members:
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
 
-.. autofunction:: optuna.integration.lightgbm.train
+   optuna.integration.ChainerPruningExtension
+   optuna.integration.ChainerMNStudy
 
-.. autoclass:: optuna.integration.lightgbm.LightGBMTuner
-    :members:
-    :inherited-members:
-    :exclude-members: sample_train_set
+fast.ai
+-------
 
-.. autoclass:: optuna.integration.lightgbm.LightGBMTunerCV
-    :members:
-    :inherited-members:
-    :exclude-members: sample_train_set
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
 
-.. autoclass:: MLflowCallback
-    :members:
+   optuna.integration.FastAIPruningCallback
 
-.. autoclass:: MXNetPruningCallback
-    :members:
+Keras
+-----
 
-.. autoclass:: PyTorchLightningPruningCallback
-    :members:
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
 
-.. autoclass:: SkoptSampler
-    :members:
-    :exclude-members: infer_relative_search_space, sample_relative, sample_independent
+   optuna.integration.KerasPruningCallback
 
-.. autoclass:: TensorFlowPruningHook
-    :members:
+LightGBM
+--------
 
-.. autoclass:: TFKerasPruningCallback
-    :members:
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
 
-.. autoclass:: XGBoostPruningCallback
-    :members:
+   optuna.integration.LightGBMPruningCallback
+   optuna.integration.lightgbm.train
+   optuna.integration.lightgbm.LightGBMTuner
+   optuna.integration.lightgbm.LightGBMTunerCV
 
-.. autoclass:: OptunaSearchCV
-    :members:
+MLflow
+------
 
-.. autoclass:: AllenNLPExecutor
-    :members:
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
 
-.. autofunction:: optuna.integration.allennlp.dump_best_config
+   optuna.integration.MLflowCallback
+
+MXNet
+-----
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   optuna.integration.MXNetPruningCallback
+
+pycma
+-----
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   optuna.integration.PyCmaSampler
+   optuna.integration.CmaEsSampler
+
+PyTorch
+-------
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   optuna.integration.PyTorchIgnitePruningHandler
+   optuna.integration.PyTorchLightningPruningCallback
+
+scikit-learn
+------------
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   optuna.integration.OptunaSearchCV
+
+scikit-optimize
+---------------
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   optuna.integration.SkoptSampler
+
+skorch
+------
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+    optuna.integration.SkorchPruningCallback
+
+TensorFlow
+----------
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   optuna.integration.TensorBoardCallback
+   optuna.integration.TensorFlowPruningHook
+   optuna.integration.TFKerasPruningCallback
+
+XGBoost
+-------
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   optuna.integration.XGBoostPruningCallback

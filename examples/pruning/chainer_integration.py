@@ -15,11 +15,11 @@ import chainer
 import chainer.functions as F
 import chainer.links as L
 import numpy as np
-import pkg_resources
+from packaging import version
 
 import optuna
 
-if pkg_resources.parse_version(chainer.__version__) < pkg_resources.parse_version("4.0.0"):
+if version.parse(chainer.__version__) < version.parse("4.0.0"):
     raise RuntimeError("Chainer>=4.0.0 is required for this example.")
 
 N_TRAIN_EXAMPLES = 3000
@@ -35,7 +35,7 @@ def create_model(trial):
 
     layers = []
     for i in range(n_layers):
-        n_units = int(trial.suggest_loguniform("n_units_l{}".format(i), 32, 256))
+        n_units = trial.suggest_int("n_units_l{}".format(i), 32, 256, log=True)
         layers.append(L.Linear(None, n_units))
         layers.append(F.relu)
     layers.append(L.Linear(None, 10))

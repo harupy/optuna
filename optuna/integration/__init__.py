@@ -1,13 +1,14 @@
 import os
 import sys
 from types import ModuleType
-from typing import Any  # NOQA
+from typing import Any
 
 from optuna.type_checking import TYPE_CHECKING
 
 
 _import_structure = {
-    "allennlp": ["AllenNLPExecutor"],
+    "allennlp": ["AllenNLPExecutor", "AllenNLPPruningCallback"],
+    "catalyst": ["CatalystPruningCallback"],
     "chainer": ["ChainerPruningExtension"],
     "chainermn": ["ChainerMNStudy"],
     "cma": ["CmaEsSampler", "PyCmaSampler"],
@@ -17,8 +18,10 @@ _import_structure = {
     "pytorch_ignite": ["PyTorchIgnitePruningHandler"],
     "pytorch_lightning": ["PyTorchLightningPruningCallback"],
     "sklearn": ["OptunaSearchCV"],
+    "skorch": ["SkorchPruningCallback"],
     "mxnet": ["MXNetPruningCallback"],
     "skopt": ["SkoptSampler"],
+    "tensorboard": ["TensorBoardCallback"],
     "tensorflow": ["TensorFlowPruningHook"],
     "tfkeras": ["TFKerasPruningCallback"],
     "xgboost": ["XGBoostPruningCallback"],
@@ -31,6 +34,8 @@ __all__ = list(_import_structure.keys()) + sum(_import_structure.values(), [])
 
 if TYPE_CHECKING:
     from optuna.integration.allennlp import AllenNLPExecutor  # NOQA
+    from optuna.integration.allennlp import AllenNLPPruningCallback  # NOQA
+    from optuna.integration.catalyst import CatalystPruningCallback  # NOQA
     from optuna.integration.chainer import ChainerPruningExtension  # NOQA
     from optuna.integration.chainermn import ChainerMNStudy  # NOQA
     from optuna.integration.cma import CmaEsSampler  # NOQA
@@ -46,6 +51,8 @@ if TYPE_CHECKING:
     from optuna.integration.pytorch_lightning import PyTorchLightningPruningCallback  # NOQA
     from optuna.integration.sklearn import OptunaSearchCV  # NOQA
     from optuna.integration.skopt import SkoptSampler  # NOQA
+    from optuna.integration.skorch import SkorchPruningCallback  # NOQA
+    from optuna.integration.tensorboard import TensorBoardCallback  # NOQA
     from optuna.integration.tensorflow import TensorFlowPruningHook  # NOQA
     from optuna.integration.tfkeras import TFKerasPruningCallback  # NOQA
     from optuna.integration.xgboost import XGBoostPruningCallback  # NOQA
@@ -68,8 +75,7 @@ else:
             for value in values:
                 _class_to_module[value] = key
 
-        def __getattr__(self, name):
-            # type: (str) -> Any
+        def __getattr__(self, name: str) -> Any:
 
             if name in self._modules:
                 value = self._get_module(name)
@@ -82,8 +88,7 @@ else:
             setattr(self, name, value)
             return value
 
-        def _get_module(self, module_name):
-            # type: (str) -> ModuleType
+        def _get_module(self, module_name: str) -> ModuleType:
 
             import importlib
 

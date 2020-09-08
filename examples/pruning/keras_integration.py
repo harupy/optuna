@@ -14,6 +14,7 @@ see the following link:
     https://github.com/optuna/optuna/blob/master/examples/mlflow/keras_mlflow.py
 
 """
+import warnings
 
 import keras
 from keras.datasets import mnist
@@ -39,14 +40,14 @@ def create_model(trial):
     n_layers = trial.suggest_int("n_layers", 1, 3)
     model = Sequential()
     for i in range(n_layers):
-        num_hidden = int(trial.suggest_loguniform("n_units_l{}".format(i), 4, 128))
+        num_hidden = trial.suggest_int("n_units_l{}".format(i), 4, 128, log=True)
         model.add(Dense(num_hidden, activation="relu"))
-        dropout = trial.suggest_uniform("dropout_l{}".format(i), 0.2, 0.5)
+        dropout = trial.suggest_float("dropout_l{}".format(i), 0.2, 0.5)
         model.add(Dropout(rate=dropout))
     model.add(Dense(CLASSES, activation="softmax"))
 
     # We compile our model with a sampled learning rate.
-    lr = trial.suggest_loguniform("lr", 1e-5, 1e-1)
+    lr = trial.suggest_float("lr", 1e-5, 1e-1, log=True)
     model.compile(
         loss="categorical_crossentropy",
         optimizer=keras.optimizers.RMSprop(lr=lr),
@@ -90,6 +91,14 @@ def objective(trial):
 
 
 if __name__ == "__main__":
+    warnings.warn(
+        "Recent Keras release (2.4.0) simply redirects all APIs "
+        "in the standalone keras package to point to tf.keras. "
+        "There is now only one Keras: tf.keras. "
+        "There may be some breaking changes for some workflows by upgrading to keras 2.4.0. "
+        "Test before upgrading. "
+        "REF:https://github.com/keras-team/keras/releases/tag/2.4.0"
+    )
     study = optuna.create_study(direction="maximize", pruner=optuna.pruners.MedianPruner())
     study.optimize(objective, n_trials=100)
     pruned_trials = [t for t in study.trials if t.state == optuna.trial.TrialState.PRUNED]

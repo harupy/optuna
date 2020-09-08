@@ -16,14 +16,6 @@ N_REPORTS = 10
 EXPECTED_N_TRIALS_PER_BRACKET = 10
 
 
-def test_hyperband_experimental_warning() -> None:
-
-    with pytest.warns(optuna.exceptions.ExperimentalWarning):
-        optuna.pruners.HyperbandPruner(
-            min_resource=MIN_RESOURCE, max_resource=MAX_RESOURCE, reduction_factor=REDUCTION_FACTOR
-        )
-
-
 def test_hyperband_pruner_intermediate_values() -> None:
     pruner = optuna.pruners.HyperbandPruner(
         min_resource=MIN_RESOURCE, max_resource=MAX_RESOURCE, reduction_factor=REDUCTION_FACTOR
@@ -214,7 +206,7 @@ def test_hyperband_no_call_of_filter_study_in_should_prune(
 
     sampler = sampler_init_func()
     pruner = optuna.pruners.HyperbandPruner(
-        min_resource=MIN_RESOURCE, max_resource=MAX_RESOURCE, reduction_factor=REDUCTION_FACTOR,
+        min_resource=MIN_RESOURCE, max_resource=MAX_RESOURCE, reduction_factor=REDUCTION_FACTOR
     )
     study = optuna.study.create_study(sampler=sampler, pruner=pruner)
     study.optimize(objective, n_trials=10)

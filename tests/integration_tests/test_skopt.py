@@ -1,4 +1,8 @@
+from typing import Any
+from typing import Dict
+from typing import List
 from unittest.mock import call
+from unittest.mock import Mock
 from unittest.mock import patch
 
 import pytest
@@ -10,13 +14,12 @@ from optuna.testing.sampler import DeterministicRelativeSampler
 from optuna.trial import FrozenTrial
 
 
-if optuna.type_checking.TYPE_CHECKING:
-    from typing import Any  # NOQA
-    from typing import Dict  # NOQA
+def test_consider_pruned_trials_experimental_warning() -> None:
+    with pytest.warns(optuna.exceptions.ExperimentalWarning):
+        optuna.integration.SkoptSampler(consider_pruned_trials=True)
 
 
-def test_conversion_from_distribution_to_dimension():
-    # type: () -> None
+def test_conversion_from_distribution_to_dimension() -> None:
 
     sampler = optuna.integration.SkoptSampler()
     study = optuna.create_study(sampler=sampler)
@@ -51,8 +54,7 @@ def test_conversion_from_distribution_to_dimension():
         assert mock_object.mock_calls[0] == call(dimensions)
 
 
-def test_skopt_kwargs():
-    # type: () -> None
+def test_skopt_kwargs() -> None:
 
     sampler = optuna.integration.SkoptSampler(skopt_kwargs={"base_estimator": "GBRT"})
     study = optuna.create_study(sampler=sampler)
@@ -64,8 +66,7 @@ def test_skopt_kwargs():
         assert mock_object.mock_calls[0] == call(dimensions, base_estimator="GBRT")
 
 
-def test_skopt_kwargs_dimensions():
-    # type: () -> None
+def test_skopt_kwargs_dimensions() -> None:
 
     # User specified `dimensions` argument will be ignored in `SkoptSampler`.
     sampler = optuna.integration.SkoptSampler(skopt_kwargs={"dimensions": []})
@@ -78,8 +79,7 @@ def test_skopt_kwargs_dimensions():
         assert mock_object.mock_calls[0] == call(expected_dimensions)
 
 
-def test_is_compatible():
-    # type: () -> None
+def test_is_compatible() -> None:
 
     sampler = optuna.integration.SkoptSampler()
     study = optuna.create_study(sampler=sampler)
@@ -143,8 +143,7 @@ def test_reseed_rng() -> None:
         assert mock_object.call_count == 1
 
 
-def _objective(trial):
-    # type: (optuna.trial.Trial) -> float
+def _objective(trial: optuna.trial.Trial) -> float:
 
     p0 = trial.suggest_uniform("p0", -3.3, 5.2)
     p1 = trial.suggest_uniform("p1", 2.0, 2.0)
@@ -162,8 +161,7 @@ def _objective(trial):
     return p0 + p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 + int(p10)
 
 
-def test_sample_relative_n_startup_trials():
-    # type: () -> None
+def test_sample_relative_n_startup_trials() -> None:
 
     independent_sampler = DeterministicRelativeSampler({}, {})
     sampler = optuna.integration.SkoptSampler(
@@ -183,8 +181,47 @@ def test_sample_relative_n_startup_trials():
         assert mock_relative.call_count == 3
 
 
-def _create_frozen_trial(params, param_distributions):
-    # type: (Dict[str, Any], Dict[str, distributions.BaseDistribution]) -> FrozenTrial
+def test_get_trials() -> None:
+
+    with patch("optuna.Study.get_trials", new=Mock(side_effect=lambda deepcopy: _create_trials())):
+        sampler = optuna.integration.SkoptSampler(consider_pruned_trials=False)
+        study = optuna.create_study(sampler=sampler)
+        trials = sampler._get_trials(study)
+        assert len(trials) == 1
+
+        sampler = optuna.integration.SkoptSampler(consider_pruned_trials=True)
+        study = optuna.create_study(sampler=sampler)
+        trials = sampler._get_trials(study)
+        assert len(trials) == 2
+        assert trials[0].value == 1.0
+        assert trials[1].value == 2.0
+
+
+def _create_trials() -> List[FrozenTrial]:
+
+    trials = []
+    trials.append(_create_frozen_trial({}, {}))
+    trials.append(
+        FrozenTrial(
+            number=1,
+            value=None,
+            state=optuna.trial.TrialState.PRUNED,
+            user_attrs={},
+            system_attrs={},
+            params={},
+            distributions={},
+            intermediate_values={0: 2.0},
+            datetime_start=None,
+            datetime_complete=None,
+            trial_id=0,
+        )
+    )
+    return trials
+
+
+def _create_frozen_trial(
+    params: Dict[str, Any], param_distributions: Dict[str, distributions.BaseDistribution]
+) -> FrozenTrial:
 
     return FrozenTrial(
         number=0,

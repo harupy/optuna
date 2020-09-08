@@ -7,21 +7,13 @@ sentiment classification using an AllenNLP jsonnet config file.
 Since it is too time-consuming to use the training dataset,
 we here use the validation dataset instead.
 
-We have the following two ways to execute this example:
-
-(1) Execute this code directly.
-    $ python allennlp_jsonnet.py
-
-
-(2) Execute through CLI.
-    $ STUDY_NAME=`optuna create-study --direction maximize --storage sqlite:///example.db`
-    $ optuna study optimize allennlp_jsonnet.py objective --n-trials=100 --study-name $STUDY_NAME \
-      --storage sqlite:///example.db
-
 """
 
 import os.path
 import shutil
+
+import allennlp
+from packaging import version
 
 import optuna
 from optuna.integration.allennlp import dump_best_config
@@ -37,7 +29,7 @@ BEST_CONFIG_PATH = "best_classifier.json"
 
 
 def objective(trial):
-    trial.suggest_uniform("DROPOUT", 0.0, 0.5)
+    trial.suggest_float("DROPOUT", 0.0, 0.5)
     trial.suggest_int("EMBEDDING_DIM", 20, 50)
     trial.suggest_int("MAX_FILTER_SIZE", 3, 6)
     trial.suggest_int("NUM_FILTERS", 16, 32)
@@ -50,6 +42,9 @@ def objective(trial):
 
 
 if __name__ == "__main__":
+    if version.parse(allennlp.__version__) < version.parse("1.0.0"):
+        raise RuntimeError("AllenNLP>=1.0.0 is required for this example.")
+
     study = optuna.create_study(direction="maximize")
     study.optimize(objective, n_trials=50, timeout=600)
 

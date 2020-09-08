@@ -1,12 +1,12 @@
 import itertools
 from typing import Dict
 from typing import List
+from typing import Optional
 
-from allennlp.common.util import pad_sequence_to_length
+from allennlp.data.token_indexers.token_indexer import IndexedTokenList
 from allennlp.data.token_indexers.token_indexer import TokenIndexer
 from allennlp.data.tokenizers.token import Token
 from allennlp.data.vocabulary import Vocabulary
-import torch
 
 
 @TokenIndexer.register("tiny_single_id")
@@ -22,8 +22,8 @@ class SingleIdTokenIndexer(TokenIndexer):
     def __init__(
         self,
         lowercase_tokens: bool = False,
-        start_tokens: List[str] = None,
-        end_tokens: List[str] = None,
+        start_tokens: Optional[List[str]] = None,
+        end_tokens: Optional[List[str]] = None,
         token_min_padding_length: int = 0,
     ) -> None:
         super().__init__(token_min_padding_length)
@@ -39,7 +39,7 @@ class SingleIdTokenIndexer(TokenIndexer):
         counter["tokens"][text] += 1
 
     def tokens_to_indices(
-        self, tokens: List[Token], vocabulary: Vocabulary, index_name: str
+        self, tokens: List[Token], vocabulary: Vocabulary
     ) -> Dict[str, List[int]]:
         indices: List[int] = []
 
@@ -49,18 +49,7 @@ class SingleIdTokenIndexer(TokenIndexer):
                 text = text.lower()
             indices.append(vocabulary.get_token_index(text, "tokens"))
 
-        return {index_name: indices}
+        return {"tokens": indices}
 
-    def get_padding_lengths(self, token: int) -> Dict[str, int]:
-        return {}
-
-    def as_padded_tensor(
-        self,
-        tokens: Dict[str, List[int]],
-        desired_num_tokens: Dict[str, int],
-        padding_lengths: Dict[str, int],
-    ) -> Dict[str, torch.Tensor]:
-        return {
-            key: torch.LongTensor(pad_sequence_to_length(val, desired_num_tokens[key]))
-            for key, val in tokens.items()
-        }
+    def get_empty_token_list(self) -> IndexedTokenList:
+        return {"tokens": []}

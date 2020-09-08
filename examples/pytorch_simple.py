@@ -6,17 +6,6 @@ PyTorch and MNIST. We optimize the neural network architecture as well as the op
 configuration. As it is too time consuming to use the whole MNIST dataset, we here use a small
 subset of it.
 
-We have the following two ways to execute this example:
-
-(1) Execute this code directly.
-    $ python pytorch_simple.py
-
-
-(2) Execute through CLI.
-    $ STUDY_NAME=`optuna create-study --direction maximize --storage sqlite:///example.db`
-    $ optuna study optimize pytorch_simple.py objective --n-trials=100 --study-name $STUDY_NAME \
-      --storage sqlite:///example.db
-
 """
 
 import os
@@ -51,7 +40,7 @@ def define_model(trial):
         out_features = trial.suggest_int("n_units_l{}".format(i), 4, 128)
         layers.append(nn.Linear(in_features, out_features))
         layers.append(nn.ReLU())
-        p = trial.suggest_uniform("dropout_l{}".format(i), 0.2, 0.5)
+        p = trial.suggest_float("dropout_l{}".format(i), 0.2, 0.5)
         layers.append(nn.Dropout(p))
 
         in_features = out_features
@@ -84,15 +73,15 @@ def objective(trial):
 
     # Generate the optimizers.
     optimizer_name = trial.suggest_categorical("optimizer", ["Adam", "RMSprop", "SGD"])
-    lr = trial.suggest_loguniform("lr", 1e-5, 1e-1)
+    lr = trial.suggest_float("lr", 1e-5, 1e-1, log=True)
     optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=lr)
 
     # Get the MNIST dataset.
     train_loader, valid_loader = get_mnist()
 
     # Training of the model.
-    model.train()
     for epoch in range(EPOCHS):
+        model.train()
         for batch_idx, (data, target) in enumerate(train_loader):
             # Limiting training data for faster epochs.
             if batch_idx * BATCHSIZE >= N_TRAIN_EXAMPLES:

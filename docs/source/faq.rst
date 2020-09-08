@@ -83,7 +83,7 @@ If you want to save and resume studies,  it's handy to use SQLite as the local s
     study = optuna.create_study(study_name='foo_study', storage='sqlite:///example.db')
     study.optimize(objective)  # The state of `study` will be persisted to the local SQLite file.
 
-Please see :ref:`rdb` for more details.
+Please see :ref:`sphx_glr_tutorial_003_rdb.py` for more details.
 
 
 How can I save and resume studies?
@@ -110,7 +110,7 @@ And to resume the study:
     for key, value in study.best_trial.params.items():
         print(f'    {key}: {value}')
 
-If you are using RDBs, see :ref:`rdb` for more details.
+If you are using RDBs, see :ref:`sphx_glr_tutorial_003_rdb.py` for more details.
 
 How to suppress log messages of Optuna?
 ---------------------------------------
@@ -126,7 +126,7 @@ For instance, you can stop showing each trial result as follows:
 
     study = optuna.create_study()
     study.optimize(objective)
-    # Logs like '[I 2018-12-05 11:41:42,324] Finished a trial resulted in value:...' are disabled.
+    # Logs like '[I 2020-07-21 13:41:45,627] Trial 0 finished with value:...' are disabled.
 
 
 Please refer to :class:`optuna.logging` for further details.
@@ -238,7 +238,7 @@ What happens when I dynamically alter a search space?
 
 Since parameters search spaces are specified in each call to the suggestion API, e.g.
 :func:`~optuna.trial.Trial.suggest_uniform` and :func:`~optuna.trial.Trial.suggest_int`,
-it is possible to in a single study alter the range by sampling parameters from different search
+it is possible to, in a single study, alter the range by sampling parameters from different search
 spaces in different trials.
 The behavior when altered is defined by each sampler individually.
 

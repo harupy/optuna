@@ -18,6 +18,8 @@
 
 import pkg_resources
 
+from sphinx_gallery.sorting import FileNameSortKey
+
 __version__ = pkg_resources.get_distribution('optuna').version
 
 # -- Project information -----------------------------------------------------
@@ -42,6 +44,7 @@ release = __version__
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
@@ -49,6 +52,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'cliff.sphinxext',
+    'sphinx_gallery.gen_gallery',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -164,3 +168,20 @@ texinfo_documents = [
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
 
 # -- Extension configuration -------------------------------------------------
+autosummary_generate = True
+autodoc_default_options = {
+    'members': True,
+    'inherited-members': True,
+}
+
+sphinx_gallery_conf = {
+    'examples_dirs': [
+        '../../tutorial',
+    ],
+    'gallery_dirs': [
+        'tutorial',
+    ],
+    'within_subsection_order': FileNameSortKey,
+    'filename_pattern': r'/*\.py',
+    'first_notebook_cell': None,
+}

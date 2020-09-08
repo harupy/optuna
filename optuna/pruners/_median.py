@@ -50,14 +50,16 @@ class MedianPruner(PercentilePruner):
         n_startup_trials:
             Pruning is disabled until the given number of trials finish in the same study.
         n_warmup_steps:
-            Pruning is disabled until the trial exceeds the given number of step.
+            Pruning is disabled until the trial exceeds the given number of step. Note that
+            this feature assumes that ``step`` starts at zero.
         interval_steps:
             Interval in number of steps between the pruning checks, offset by the warmup steps.
             If no value has been reported at the time of a pruning check, that particular check
             will be postponed until a value is reported.
     """
 
-    def __init__(self, n_startup_trials=5, n_warmup_steps=0, interval_steps=1):
-        # type: (int, int, int) -> None
+    def __init__(
+        self, n_startup_trials: int = 5, n_warmup_steps: int = 0, interval_steps: int = 1
+    ) -> None:
 
         super(MedianPruner, self).__init__(50.0, n_startup_trials, n_warmup_steps, interval_steps)
