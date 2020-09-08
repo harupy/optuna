@@ -966,9 +966,6 @@ def get_all_study_summaries(storage: Union[str, storages.BaseStorage]) -> List[S
     Returns:
         List of study history summarized as :class:`~optuna.study.StudySummary` objects.
 
-    See also:
-        :func:`optuna.get_all_study_summaries` is an alias of :func:`optuna.study.get_all_study_summaries`.
-
     """
 
     storage = storages.get_storage(storage)
