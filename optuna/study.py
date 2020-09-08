@@ -954,12 +954,6 @@ def get_all_study_summaries(storage: Union[str, storages.BaseStorage]) -> List[S
 
     Example:
 
-        .. testsetup::
-
-            import os
-
-            if os.path.exists("example.db"):
-                raise RuntimeError("'example.db' already exists. Please remove it.")
 
         .. testcode::
 
@@ -969,10 +963,6 @@ def get_all_study_summaries(storage: Union[str, storages.BaseStorage]) -> List[S
                 x = trial.suggest_float("x", -10, 10)
                 return (x - 2) ** 2
 
-
-        .. testcleanup::
-
-            os.remove("example.db")
 
     Args:
         storage:
