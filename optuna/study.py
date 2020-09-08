@@ -675,10 +675,7 @@ class Study(BaseStudy):
                 callback(self, frozen_trial)
 
     def _run_trial(
-        self,
-        func: ObjectiveFuncType,
-        catch: Tuple[Type[Exception], ...],
-        gc_after_trial: bool,
+        self, func: ObjectiveFuncType, catch: Tuple[Type[Exception], ...], gc_after_trial: bool,
     ) -> trial_module.Trial:
 
         # Sync storage once at the beginning of the objective evaluation.
@@ -926,10 +923,7 @@ def load_study(
     return Study(study_name=study_name, storage=storage, sampler=sampler, pruner=pruner)
 
 
-def delete_study(
-    study_name: str,
-    storage: Union[str, storages.BaseStorage],
-) -> None:
+def delete_study(study_name: str, storage: Union[str, storages.BaseStorage],) -> None:
     """Delete a :class:`~optuna.study.Study` object.
 
     Args:
@@ -954,33 +948,7 @@ def get_all_study_summaries(storage: Union[str, storages.BaseStorage]) -> List[S
 
     Example:
 
-        .. testsetup::
 
-            import os
-
-            if os.path.exists("example.db"):
-                raise RuntimeError("'example.db' already exists. Please remove it.")
-
-        .. testcode::
-
-            import optuna
-
-            def objective(trial):
-                x = trial.suggest_float("x", -10, 10)
-                return (x - 2) ** 2
-
-            study = optuna.create_study(study_name="example-study", storage="sqlite:///example.db")
-            study.optimize(objective, n_trials=3)
-
-            study_summaries = optuna.study.get_all_study_summaries(storage="sqlite:///example.db")
-            assert len(study_summaries) == 1
-
-            study_summary = study_summaries[0]
-            assert study_summary.study_name == "example-study"
-
-        .. testcleanup::
-
-            os.remove("example.db")
 
     Args:
         storage:
