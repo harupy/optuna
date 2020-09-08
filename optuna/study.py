@@ -953,9 +953,6 @@ def get_all_study_summaries(storage: Union[str, storages.BaseStorage]) -> List[S
     """Get all history of studies stored in a specified storage.
 
     Example:
-        .. testcode::
-
-            import optuna
 
 
     Args:
