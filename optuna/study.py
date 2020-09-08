@@ -958,6 +958,16 @@ def get_all_study_summaries(storage: Union[str, storages.BaseStorage]) -> List[S
 
             print("foo")
 
+    Args:
+        storage:
+            Database URL such as ``sqlite:///example.db``. Please see also the documentation of
+            :func:`~optuna.study.create_study` for further details.
+
+    Returns:
+        List of study history summarized as :class:`~optuna.study.StudySummary` objects.
+
+    See also:
+        :func:`optuna.get_all_study_summaries` is an alias of :func:`optuna.study.get_all_study_summaries`.
 
     """
 
