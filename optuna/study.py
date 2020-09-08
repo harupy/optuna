@@ -759,10 +759,7 @@ class Study(BaseStudy):
                 callback(self, frozen_trial)
 
     def _run_trial(
-        self,
-        func: ObjectiveFuncType,
-        catch: Tuple[Type[Exception], ...],
-        gc_after_trial: bool,
+        self, func: ObjectiveFuncType, catch: Tuple[Type[Exception], ...], gc_after_trial: bool,
     ) -> trial_module.Trial:
 
         # Sync storage once at the beginning of the objective evaluation.
@@ -977,10 +974,10 @@ def load_study(
                 x = trial.suggest_float("x", 0, 10)
                 return x ** 2
 
-            study = optuna.create_study(storage="sqlite:///example.db", study_name="my_study")
+            study = optuna.create_study(storage="example.db", study_name="my_study")
             study.optimize(objective, n_trials=3)
 
-            loaded_study = optuna.load_study(study_name="my_study", storage="sqlite:///example.db")
+            loaded_study = optuna.load_study(study_name="my_study", storage="example.db")
             assert len(loaded_study.trials) == len(study.trials)
 
         .. testcleanup::
@@ -1010,10 +1007,7 @@ def load_study(
     return Study(study_name=study_name, storage=storage, sampler=sampler, pruner=pruner)
 
 
-def delete_study(
-    study_name: str,
-    storage: Union[str, storages.BaseStorage],
-) -> None:
+def delete_study(study_name: str, storage: Union[str, storages.BaseStorage],) -> None:
     """Delete a :class:`~optuna.study.Study` object.
 
     Example:
@@ -1033,10 +1027,10 @@ def delete_study(
                 x = trial.suggest_float("x", -10, 10)
                 return (x - 2) ** 2
 
-            study = optuna.create_study(study_name="example-study", storage="sqlite:///example.db")
+            study = optuna.create_study(study_name="example-study", storage="example.db")
             study.optimize(objective, n_trials=3)
 
-            optuna.delete_study(study_name="example-study", storage="sqlite:///example.db")
+            optuna.delete_study(study_name="example-study", storage="example.db")
 
         .. testcleanup::
 
@@ -1079,10 +1073,10 @@ def get_all_study_summaries(storage: Union[str, storages.BaseStorage]) -> List[S
                 x = trial.suggest_float("x", -10, 10)
                 return (x - 2) ** 2
 
-            study = optuna.create_study(study_name="example-study", storage="sqlite:///example.db")
+            study = optuna.create_study(study_name="example-study", storage="example.db")
             study.optimize(objective, n_trials=3)
 
-            study_summaries = optuna.study.get_all_study_summaries(storage="sqlite:///example.db")
+            study_summaries = optuna.study.get_all_study_summaries(storage="example.db")
             assert len(study_summaries) == 1
 
             study_summary = study_summaries[0]
