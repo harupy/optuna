@@ -20,8 +20,7 @@ from optuna.trial import TrialState
 
 _logger = logging.get_logger(__name__)
 
-# Minimum value of sigma0 to avoid ZeroDivisionError.
-_MIN_SIGMA0 = 1e-10
+_EPS = 1e-10
 
 
 class CmaEsSampler(BaseSampler):
@@ -145,7 +144,7 @@ class CmaEsSampler(BaseSampler):
         self._independent_sampler.reseed_rng()
 
     def infer_relative_search_space(
-        self, study: "optuna.Study", trial: "optuna.trial.FrozenTrial",
+        self, study: "optuna.Study", trial: "optuna.trial.FrozenTrial"
     ) -> Dict[str, BaseDistribution]:
 
         search_space = {}  # type: Dict[str, BaseDistribution]
@@ -272,7 +271,9 @@ class CmaEsSampler(BaseSampler):
             sigma0 = _initialize_sigma0(search_space)
         else:
             sigma0 = self._sigma0
-        sigma0 = max(sigma0, _MIN_SIGMA0)
+
+        # Avoid ZeroDivisionError in cmaes.
+        sigma0 = max(sigma0, _EPS)
         mean = np.array([self._x0[k] for k in ordered_keys], dtype=float)
         bounds = _get_search_space_bound(ordered_keys, search_space)
         n_dimension = len(ordered_keys)
@@ -414,7 +415,7 @@ def _initialize_sigma0(search_space: Dict[str, BaseDistribution]) -> float:
 
 
 def _get_search_space_bound(
-    keys: List[str], search_space: Dict[str, BaseDistribution],
+    keys: List[str], search_space: Dict[str, BaseDistribution]
 ) -> np.ndarray:
 
     bounds = []
@@ -425,6 +426,13 @@ def _get_search_space_bound(
             (
                 optuna.distributions.UniformDistribution,
                 optuna.distributions.LogUniformDistribution,
+            ),
+        ):
+            # These distributions cannot accept the value which equals to the upper bound.
+            bounds.append([_to_cma_param(dist, dist.low), _to_cma_param(dist, dist.high) - _EPS])
+        elif isinstance(
+            dist,
+            (
                 optuna.distributions.DiscreteUniformDistribution,
                 optuna.distributions.IntUniformDistribution,
                 optuna.distributions.IntLogUniformDistribution,
