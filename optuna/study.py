@@ -960,7 +960,7 @@ def get_all_study_summaries(storage: Union[str, storages.BaseStorage]) -> List[S
 
     Args:
         storage:
-            Database URL such as ``sqlite:///example.db``. Please see also the documentation of
+            Database URL. Please see also the documentation of
             :func:`~optuna.study.create_study` for further details.
 
     Returns:
