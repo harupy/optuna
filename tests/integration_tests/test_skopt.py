@@ -1,5 +1,3 @@
-from typing import Any
-from typing import Dict
 from typing import List
 from unittest.mock import call
 from unittest.mock import Mock
@@ -14,12 +12,18 @@ from optuna.testing.sampler import DeterministicRelativeSampler
 from optuna.trial import FrozenTrial
 
 
+if optuna.type_checking.TYPE_CHECKING:
+    from typing import Any  # NOQA
+    from typing import Dict  # NOQA
+
+
 def test_consider_pruned_trials_experimental_warning() -> None:
     with pytest.warns(optuna.exceptions.ExperimentalWarning):
         optuna.integration.SkoptSampler(consider_pruned_trials=True)
 
 
-def test_conversion_from_distribution_to_dimension() -> None:
+def test_conversion_from_distribution_to_dimension():
+    # type: () -> None
 
     sampler = optuna.integration.SkoptSampler()
     study = optuna.create_study(sampler=sampler)
@@ -54,7 +58,8 @@ def test_conversion_from_distribution_to_dimension() -> None:
         assert mock_object.mock_calls[0] == call(dimensions)
 
 
-def test_skopt_kwargs() -> None:
+def test_skopt_kwargs():
+    # type: () -> None
 
     sampler = optuna.integration.SkoptSampler(skopt_kwargs={"base_estimator": "GBRT"})
     study = optuna.create_study(sampler=sampler)
@@ -66,7 +71,8 @@ def test_skopt_kwargs() -> None:
         assert mock_object.mock_calls[0] == call(dimensions, base_estimator="GBRT")
 
 
-def test_skopt_kwargs_dimensions() -> None:
+def test_skopt_kwargs_dimensions():
+    # type: () -> None
 
     # User specified `dimensions` argument will be ignored in `SkoptSampler`.
     sampler = optuna.integration.SkoptSampler(skopt_kwargs={"dimensions": []})
@@ -79,7 +85,8 @@ def test_skopt_kwargs_dimensions() -> None:
         assert mock_object.mock_calls[0] == call(expected_dimensions)
 
 
-def test_is_compatible() -> None:
+def test_is_compatible():
+    # type: () -> None
 
     sampler = optuna.integration.SkoptSampler()
     study = optuna.create_study(sampler=sampler)
@@ -143,7 +150,8 @@ def test_reseed_rng() -> None:
         assert mock_object.call_count == 1
 
 
-def _objective(trial: optuna.trial.Trial) -> float:
+def _objective(trial):
+    # type: (optuna.trial.Trial) -> float
 
     p0 = trial.suggest_uniform("p0", -3.3, 5.2)
     p1 = trial.suggest_uniform("p1", 2.0, 2.0)
@@ -161,7 +169,8 @@ def _objective(trial: optuna.trial.Trial) -> float:
     return p0 + p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 + int(p10)
 
 
-def test_sample_relative_n_startup_trials() -> None:
+def test_sample_relative_n_startup_trials():
+    # type: () -> None
 
     independent_sampler = DeterministicRelativeSampler({}, {})
     sampler = optuna.integration.SkoptSampler(
@@ -219,9 +228,8 @@ def _create_trials() -> List[FrozenTrial]:
     return trials
 
 
-def _create_frozen_trial(
-    params: Dict[str, Any], param_distributions: Dict[str, distributions.BaseDistribution]
-) -> FrozenTrial:
+def _create_frozen_trial(params, param_distributions):
+    # type: (Dict[str, Any], Dict[str, distributions.BaseDistribution]) -> FrozenTrial
 
     return FrozenTrial(
         number=0,

@@ -1,4 +1,3 @@
-from typing import Callable
 from unittest.mock import patch
 
 import pytest
@@ -6,11 +5,15 @@ import pytest
 import optuna
 from optuna.integration import PyCmaSampler
 from optuna.integration import SkoptSampler
-from optuna.samplers import BaseSampler
 from optuna.testing.sampler import FirstTrialOnlyRandomSampler
 
+if optuna.type_checking.TYPE_CHECKING:
+    from typing import Callable  # NOQA
+
+    from optuna.samplers import BaseSampler  # NOQA
+
 parametrize_sampler = pytest.mark.parametrize(
-    "sampler_class", [optuna.integration.SkoptSampler, optuna.integration.PyCmaSampler]
+    "sampler_class", [optuna.integration.SkoptSampler, optuna.integration.PyCmaSampler,]
 )
 
 
@@ -23,7 +26,8 @@ parametrize_sampler = pytest.mark.parametrize(
         lambda: PyCmaSampler(independent_sampler=FirstTrialOnlyRandomSampler()),
     ],
 )
-def test_suggested_value(sampler_class: Callable[[], BaseSampler]) -> None:
+def test_suggested_value(sampler_class):
+    # type: (Callable[[], BaseSampler]) -> None
 
     sampler = sampler_class()
     # direction='minimize'
@@ -46,13 +50,15 @@ def test_suggested_value(sampler_class: Callable[[], BaseSampler]) -> None:
 
 
 @parametrize_sampler
-def test_sample_independent(sampler_class: Callable[[], BaseSampler]) -> None:
+def test_sample_independent(sampler_class):
+    # type: (Callable[[], BaseSampler]) -> None
 
     sampler = sampler_class()
     study = optuna.create_study(sampler=sampler)
 
     # First trial.
-    def objective0(trial: optuna.trial.Trial) -> float:
+    def objective0(trial):
+        # type: (optuna.trial.Trial) -> float
 
         p0 = trial.suggest_uniform("p0", 0, 10)
         p1 = trial.suggest_loguniform("p1", 1, 10)
@@ -71,7 +77,8 @@ def test_sample_independent(sampler_class: Callable[[], BaseSampler]) -> None:
         assert mock_object.call_count == 5
 
     # Second trial.
-    def objective1(trial: optuna.trial.Trial) -> float:
+    def objective1(trial):
+        # type: (optuna.trial.Trial) -> float
 
         # p0, p2 and p4 are deleted.
         p1 = trial.suggest_loguniform("p1", 1, 10)
@@ -90,7 +97,8 @@ def test_sample_independent(sampler_class: Callable[[], BaseSampler]) -> None:
         assert [call[1][2] for call in mock_object.mock_calls] == ["p5"]
 
     # Third trial.
-    def objective2(trial: optuna.trial.Trial) -> float:
+    def objective2(trial):
+        # type: (optuna.trial.Trial) -> float
 
         p1 = trial.suggest_loguniform("p1", 50, 100)  # The range has been changed
         p3 = trial.suggest_discrete_uniform("p3", 0, 9, 3)
@@ -113,7 +121,8 @@ def test_sample_independent(sampler_class: Callable[[], BaseSampler]) -> None:
         lambda x: PyCmaSampler(warn_independent_sampling=x),
     ],
 )
-def test_warn_independent_sampling(sampler_class: Callable[[bool], BaseSampler]) -> None:
+def test_warn_independent_sampling(sampler_class):
+    # type: (Callable[[bool], BaseSampler]) -> None
 
     # warn_independent_sampling=True
     sampler = sampler_class(True)
@@ -151,7 +160,8 @@ def test_warn_independent_sampling(sampler_class: Callable[[bool], BaseSampler])
         assert mock_object.call_count == 0
 
 
-def _objective(trial: optuna.trial.Trial) -> float:
+def _objective(trial):
+    # type: (optuna.trial.Trial) -> float
 
     p0 = trial.suggest_uniform("p0", -3.3, 5.2)
     p1 = trial.suggest_uniform("p1", 2.0, 2.0)

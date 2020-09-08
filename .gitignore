@@ -73,6 +73,9 @@ instance/
 # Scrapy stuff:
 .scrapy
 
+# Sphinx documentation
+docs/_build/
+
 # PyBuilder
 target/
 
@@ -101,16 +104,10 @@ ENV/
 # PyCharm
 .idea
 
-# VSCode
-.vscode
-.devcontainer
-
 # MyPy
 .mypy_cache
 
 # Sphinx
-tutorial/example.db
-docs/_build/
 docs/source/reference/generated/
+docs/source/reference/alias_generated/
 docs/source/reference/multi_objective/generated/
-docs/source/tutorial/

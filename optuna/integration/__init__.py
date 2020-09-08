@@ -1,7 +1,7 @@
 import os
 import sys
 from types import ModuleType
-from typing import Any
+from typing import Any  # NOQA
 
 from optuna.type_checking import TYPE_CHECKING
 
@@ -18,7 +18,6 @@ _import_structure = {
     "pytorch_ignite": ["PyTorchIgnitePruningHandler"],
     "pytorch_lightning": ["PyTorchLightningPruningCallback"],
     "sklearn": ["OptunaSearchCV"],
-    "skorch": ["SkorchPruningCallback"],
     "mxnet": ["MXNetPruningCallback"],
     "skopt": ["SkoptSampler"],
     "tensorboard": ["TensorBoardCallback"],
@@ -51,7 +50,6 @@ if TYPE_CHECKING:
     from optuna.integration.pytorch_lightning import PyTorchLightningPruningCallback  # NOQA
     from optuna.integration.sklearn import OptunaSearchCV  # NOQA
     from optuna.integration.skopt import SkoptSampler  # NOQA
-    from optuna.integration.skorch import SkorchPruningCallback  # NOQA
     from optuna.integration.tensorboard import TensorBoardCallback  # NOQA
     from optuna.integration.tensorflow import TensorFlowPruningHook  # NOQA
     from optuna.integration.tfkeras import TFKerasPruningCallback  # NOQA
@@ -75,7 +73,8 @@ else:
             for value in values:
                 _class_to_module[value] = key
 
-        def __getattr__(self, name: str) -> Any:
+        def __getattr__(self, name):
+            # type: (str) -> Any
 
             if name in self._modules:
                 value = self._get_module(name)
@@ -88,7 +87,8 @@ else:
             setattr(self, name, value)
             return value
 
-        def _get_module(self, module_name: str) -> ModuleType:
+        def _get_module(self, module_name):
+            # type: (str) -> ModuleType
 
             import importlib
 

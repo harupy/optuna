@@ -11,10 +11,7 @@ from optuna.study import Study
 
 
 def get_param_importances(
-    study: Study,
-    *,
-    evaluator: Optional[BaseImportanceEvaluator] = None,
-    params: Optional[List[str]] = None
+    study: Study, *, evaluator: BaseImportanceEvaluator = None, params: Optional[List[str]] = None
 ) -> Dict[str, float]:
     """Evaluate parameter importances based on completed trials in the given study.
 

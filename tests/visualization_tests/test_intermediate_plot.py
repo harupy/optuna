@@ -1,17 +1,22 @@
 from optuna.study import create_study
 from optuna.testing.visualization import prepare_study_with_trials
-from optuna.trial import Trial
+from optuna import type_checking
 from optuna.visualization import plot_intermediate_values
 
+if type_checking.TYPE_CHECKING:
+    from optuna.trial import Trial  # NOQA
 
-def test_plot_intermediate_values() -> None:
+
+def test_plot_intermediate_values():
+    # type: () -> None
 
     # Test with no trials.
     study = prepare_study_with_trials(no_trials=True)
     figure = plot_intermediate_values(study)
     assert not figure.data
 
-    def objective(trial: Trial, report_intermediate_values: bool) -> float:
+    def objective(trial, report_intermediate_values):
+        # type: (Trial, bool) -> float
 
         if report_intermediate_values:
             trial.report(1.0, step=0)
@@ -43,7 +48,8 @@ def test_plot_intermediate_values() -> None:
     assert not figure.data
 
     # Ignore failed trials.
-    def fail_objective(_: Trial) -> float:
+    def fail_objective(_):
+        # type: (Trial) -> float
 
         raise ValueError
 

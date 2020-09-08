@@ -1,13 +1,16 @@
-from typing import List
-from typing import Tuple
-
 import pytest
 
 import optuna
 from optuna.trial import TrialState
+from optuna import type_checking
+
+if type_checking.TYPE_CHECKING:
+    from typing import List  # NOQA
+    from typing import Tuple  # NOQA
 
 
-def test_median_pruner_with_one_trial() -> None:
+def test_median_pruner_with_one_trial():
+    # type: () -> None
 
     study = optuna.study.create_study()
     trial = optuna.trial.Trial(study, study._storage.create_new_trial(study._study_id))
@@ -19,7 +22,8 @@ def test_median_pruner_with_one_trial() -> None:
 
 
 @pytest.mark.parametrize("direction_value", [("minimize", 2), ("maximize", 0.5)])
-def test_median_pruner_intermediate_values(direction_value: Tuple[str, float]) -> None:
+def test_median_pruner_intermediate_values(direction_value):
+    # type: (Tuple[str, float]) -> None
 
     direction, intermediate_value = direction_value
     pruner = optuna.pruners.MedianPruner(0, 0)
@@ -38,7 +42,8 @@ def test_median_pruner_intermediate_values(direction_value: Tuple[str, float]) -
     assert pruner.prune(study=study, trial=study._storage.get_trial(trial._trial_id))
 
 
-def test_median_pruner_intermediate_values_nan() -> None:
+def test_median_pruner_intermediate_values_nan():
+    # type: () -> None
 
     pruner = optuna.pruners.MedianPruner(0, 0)
     study = optuna.study.create_study()
@@ -61,7 +66,8 @@ def test_median_pruner_intermediate_values_nan() -> None:
     assert not pruner.prune(study=study, trial=study._storage.get_trial(trial._trial_id))
 
 
-def test_median_pruner_n_startup_trials() -> None:
+def test_median_pruner_n_startup_trials():
+    # type: () -> None
 
     pruner = optuna.pruners.MedianPruner(2, 0)
     study = optuna.study.create_study()
@@ -82,7 +88,8 @@ def test_median_pruner_n_startup_trials() -> None:
     assert pruner.prune(study=study, trial=study._storage.get_trial(trial._trial_id))
 
 
-def test_median_pruner_n_warmup_steps() -> None:
+def test_median_pruner_n_warmup_steps():
+    # type: () -> None
 
     pruner = optuna.pruners.MedianPruner(0, 1)
     study = optuna.study.create_study()
@@ -113,8 +120,9 @@ def test_median_pruner_n_warmup_steps() -> None:
     ],
 )
 def test_median_pruner_interval_steps(
-    n_warmup_steps: int, interval_steps: int, report_steps: int, expected_prune_steps: List[int]
-) -> None:
+    n_warmup_steps, interval_steps, report_steps, expected_prune_steps
+):
+    # type: (int, int, int, List[int]) -> None
 
     pruner = optuna.pruners.MedianPruner(0, n_warmup_steps, interval_steps)
     study = optuna.study.create_study()

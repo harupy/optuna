@@ -17,7 +17,8 @@ from optuna.trial import TrialState
 
 
 @pytest.fixture
-def session() -> Session:
+def session():
+    # type: () -> Session
 
     engine = create_engine("sqlite:///:memory:")
     BaseModel.metadata.create_all(engine)
@@ -26,7 +27,8 @@ def session() -> Session:
 
 class TestStudySystemAttributeModel(object):
     @staticmethod
-    def test_find_by_study_and_key(session: Session) -> None:
+    def test_find_by_study_and_key(session):
+        # type: (Session) -> None
 
         study = StudyModel(study_id=1, study_name="test-study")
         session.add(
@@ -40,7 +42,8 @@ class TestStudySystemAttributeModel(object):
         assert StudySystemAttributeModel.find_by_study_and_key(study, "not-found", session) is None
 
     @staticmethod
-    def test_where_study_id(session: Session) -> None:
+    def test_where_study_id(session):
+        # type: (Session) -> None
 
         sample_study = StudyModel(study_id=1, study_name="test-study")
         empty_study = StudyModel(study_id=2, study_name="test-study")
@@ -57,7 +60,8 @@ class TestStudySystemAttributeModel(object):
         assert 0 == len(StudySystemAttributeModel.where_study_id(-1, session))
 
     @staticmethod
-    def test_cascade_delete_on_study(session: Session) -> None:
+    def test_cascade_delete_on_study(session):
+        # type: (Session) -> None
 
         study_id = 1
         study = StudyModel(
@@ -82,7 +86,8 @@ class TestStudySystemAttributeModel(object):
 
 class TestTrialModel(object):
     @staticmethod
-    def test_default_datetime(session: Session) -> None:
+    def test_default_datetime(session):
+        # type: (Session) -> None
 
         datetime_1 = datetime.now()
 
@@ -96,7 +101,8 @@ class TestTrialModel(object):
         assert trial_model.datetime_complete is None
 
     @staticmethod
-    def test_count(session: Session) -> None:
+    def test_count(session):
+        # type: (Session) -> None
 
         study_1 = StudyModel(study_id=1, study_name="test-study-1")
         study_2 = StudyModel(study_id=2, study_name="test-study-2")
@@ -111,7 +117,8 @@ class TestTrialModel(object):
         assert 1 == TrialModel.count(session, state=TrialState.COMPLETE)
 
     @staticmethod
-    def test_count_past_trials(session: Session) -> None:
+    def test_count_past_trials(session):
+        # type: (Session) -> None
 
         study_1 = StudyModel(study_id=1, study_name="test-study-1")
         study_2 = StudyModel(study_id=2, study_name="test-study-2")
@@ -132,7 +139,8 @@ class TestTrialModel(object):
         assert 0 == trial_2_1.count_past_trials(session)
 
     @staticmethod
-    def test_cascade_delete_on_study(session: Session) -> None:
+    def test_cascade_delete_on_study(session):
+        # type: (Session) -> None
 
         study_id = 1
         study = StudyModel(
@@ -153,7 +161,8 @@ class TestTrialModel(object):
 
 class TestTrialUserAttributeModel(object):
     @staticmethod
-    def test_find_by_trial_and_key(session: Session) -> None:
+    def test_find_by_trial_and_key(session):
+        # type: (Session) -> None
 
         study = StudyModel(study_id=1, study_name="test-study")
         trial = TrialModel(study_id=study.study_id)
@@ -169,7 +178,8 @@ class TestTrialUserAttributeModel(object):
         assert TrialUserAttributeModel.find_by_trial_and_key(trial, "not-found", session) is None
 
     @staticmethod
-    def test_where_study(session: Session) -> None:
+    def test_where_study(session):
+        # type: (Session) -> None
 
         study = StudyModel(study_id=1, study_name="test-study", direction=StudyDirection.MINIMIZE)
         trial = TrialModel(trial_id=1, study_id=study.study_id, state=TrialState.COMPLETE)
@@ -187,7 +197,8 @@ class TestTrialUserAttributeModel(object):
         assert "1" == user_attributes[0].value_json
 
     @staticmethod
-    def test_where_trial(session: Session) -> None:
+    def test_where_trial(session):
+        # type: (Session) -> None
 
         study = StudyModel(study_id=1, study_name="test-study", direction=StudyDirection.MINIMIZE)
         trial = TrialModel(trial_id=1, study_id=study.study_id, state=TrialState.COMPLETE)
@@ -203,7 +214,8 @@ class TestTrialUserAttributeModel(object):
         assert "1" == user_attributes[0].value_json
 
     @staticmethod
-    def test_all(session: Session) -> None:
+    def test_all(session):
+        # type: (Session) -> None
 
         study = StudyModel(study_id=1, study_name="test-study", direction=StudyDirection.MINIMIZE)
         trial = TrialModel(trial_id=1, study_id=study.study_id, state=TrialState.COMPLETE)
@@ -219,7 +231,8 @@ class TestTrialUserAttributeModel(object):
         assert "1" == user_attributes[0].value_json
 
     @staticmethod
-    def test_cascade_delete_on_trial(session: Session) -> None:
+    def test_cascade_delete_on_trial(session):
+        # type: (Session) -> None
 
         trial_id = 1
         study = StudyModel(study_id=1, study_name="test-study", direction=StudyDirection.MINIMIZE)
@@ -244,7 +257,8 @@ class TestTrialUserAttributeModel(object):
 
 class TestTrialSystemAttributeModel(object):
     @staticmethod
-    def test_find_by_trial_and_key(session: Session) -> None:
+    def test_find_by_trial_and_key(session):
+        # type: (Session) -> None
 
         study = StudyModel(study_id=1, study_name="test-study")
         trial = TrialModel(study_id=study.study_id)
@@ -260,7 +274,8 @@ class TestTrialSystemAttributeModel(object):
         assert TrialSystemAttributeModel.find_by_trial_and_key(trial, "not-found", session) is None
 
     @staticmethod
-    def test_where_study(session: Session) -> None:
+    def test_where_study(session):
+        # type: (Session) -> None
 
         study = StudyModel(study_id=1, study_name="test-study", direction=StudyDirection.MINIMIZE)
         trial = TrialModel(trial_id=1, study_id=study.study_id, state=TrialState.COMPLETE)
@@ -278,7 +293,8 @@ class TestTrialSystemAttributeModel(object):
         assert "1" == system_attributes[0].value_json
 
     @staticmethod
-    def test_where_trial(session: Session) -> None:
+    def test_where_trial(session):
+        # type: (Session) -> None
 
         study = StudyModel(study_id=1, study_name="test-study", direction=StudyDirection.MINIMIZE)
         trial = TrialModel(trial_id=1, study_id=study.study_id, state=TrialState.COMPLETE)
@@ -294,7 +310,8 @@ class TestTrialSystemAttributeModel(object):
         assert "1" == system_attributes[0].value_json
 
     @staticmethod
-    def test_all(session: Session) -> None:
+    def test_all(session):
+        # type: (Session) -> None
 
         study = StudyModel(study_id=1, study_name="test-study", direction=StudyDirection.MINIMIZE)
         trial = TrialModel(trial_id=1, study_id=study.study_id, state=TrialState.COMPLETE)
@@ -310,7 +327,8 @@ class TestTrialSystemAttributeModel(object):
         assert "1" == system_attributes[0].value_json
 
     @staticmethod
-    def test_cascade_delete_on_trial(session: Session) -> None:
+    def test_cascade_delete_on_trial(session):
+        # type: (Session) -> None
 
         trial_id = 1
         study = StudyModel(study_id=1, study_name="test-study", direction=StudyDirection.MINIMIZE)
@@ -335,7 +353,8 @@ class TestTrialSystemAttributeModel(object):
 
 class TestVersionInfoModel(object):
     @staticmethod
-    def test_version_info_id_constraint(session: Session) -> None:
+    def test_version_info_id_constraint(session):
+        # type: (Session) -> None
 
         session.add(VersionInfoModel(schema_version=1, library_version="0.0.1"))
         session.commit()

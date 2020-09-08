@@ -7,7 +7,6 @@ import numpy
 
 from optuna.distributions import CategoricalDistribution
 from optuna.distributions import DiscreteUniformDistribution
-from optuna.distributions import IntLogUniformDistribution
 from optuna.distributions import IntUniformDistribution
 from optuna.distributions import LogUniformDistribution
 from optuna.distributions import UniformDistribution
@@ -97,7 +96,6 @@ class FanovaImportanceEvaluator(BaseImportanceEvaluator):
                 distribution,
                 (
                     DiscreteUniformDistribution,
-                    IntLogUniformDistribution,
                     IntUniformDistribution,
                     LogUniformDistribution,
                     UniformDistribution,
@@ -128,7 +126,9 @@ class FanovaImportanceEvaluator(BaseImportanceEvaluator):
 
         sorted_importances = OrderedDict(
             reversed(
-                sorted(importances.items(), key=lambda name_and_importance: name_and_importance[1])
+                sorted(
+                    importances.items(), key=lambda name_and_importance: name_and_importance[1],
+                )
             )
         )
         return sorted_importances

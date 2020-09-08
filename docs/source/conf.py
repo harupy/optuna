@@ -18,8 +18,6 @@
 
 import pkg_resources
 
-from sphinx_gallery.sorting import FileNameSortKey
-
 __version__ = pkg_resources.get_distribution('optuna').version
 
 # -- Project information -----------------------------------------------------
@@ -52,7 +50,6 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'cliff.sphinxext',
-    'sphinx_gallery.gen_gallery',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -172,16 +169,4 @@ autosummary_generate = True
 autodoc_default_options = {
     'members': True,
     'inherited-members': True,
-}
-
-sphinx_gallery_conf = {
-    'examples_dirs': [
-        '../../tutorial',
-    ],
-    'gallery_dirs': [
-        'tutorial',
-    ],
-    'within_subsection_order': FileNameSortKey,
-    'filename_pattern': r'/*\.py',
-    'first_notebook_cell': None,
 }

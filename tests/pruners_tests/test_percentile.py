@@ -1,17 +1,22 @@
 import math
-from typing import List
-from typing import Tuple
 
 import pytest
 
 import optuna
 from optuna.pruners import _percentile
-from optuna.study import Study
 from optuna.study import StudyDirection
 from optuna.trial import TrialState
+from optuna import type_checking
+
+if type_checking.TYPE_CHECKING:
+    from typing import List  # NOQA
+    from typing import Tuple  # NOQA
+
+    from optuna.study import Study  # NOQA
 
 
-def test_percentile_pruner_percentile() -> None:
+def test_percentile_pruner_percentile():
+    # type: () -> None
 
     optuna.pruners.PercentilePruner(0.0)
     optuna.pruners.PercentilePruner(25.0)
@@ -24,7 +29,8 @@ def test_percentile_pruner_percentile() -> None:
         optuna.pruners.PercentilePruner(100.1)
 
 
-def test_percentile_pruner_n_startup_trials() -> None:
+def test_percentile_pruner_n_startup_trials():
+    # type: () -> None
 
     optuna.pruners.PercentilePruner(25.0, n_startup_trials=0)
     optuna.pruners.PercentilePruner(25.0, n_startup_trials=5)
@@ -33,7 +39,8 @@ def test_percentile_pruner_n_startup_trials() -> None:
         optuna.pruners.PercentilePruner(25.0, n_startup_trials=-1)
 
 
-def test_percentile_pruner_n_warmup_steps() -> None:
+def test_percentile_pruner_n_warmup_steps():
+    # type: () -> None
 
     optuna.pruners.PercentilePruner(25.0, n_warmup_steps=0)
     optuna.pruners.PercentilePruner(25.0, n_warmup_steps=5)
@@ -42,7 +49,8 @@ def test_percentile_pruner_n_warmup_steps() -> None:
         optuna.pruners.PercentilePruner(25.0, n_warmup_steps=-1)
 
 
-def test_percentile_pruner_interval_steps() -> None:
+def test_percentile_pruner_interval_steps():
+    # type: () -> None
 
     optuna.pruners.PercentilePruner(25.0, interval_steps=1)
     optuna.pruners.PercentilePruner(25.0, interval_steps=5)
@@ -54,7 +62,8 @@ def test_percentile_pruner_interval_steps() -> None:
         optuna.pruners.PercentilePruner(25.0, interval_steps=0)
 
 
-def test_percentile_pruner_with_one_trial() -> None:
+def test_percentile_pruner_with_one_trial():
+    # type: () -> None
 
     study = optuna.study.create_study()
     trial = optuna.trial.Trial(study, study._storage.create_new_trial(study._study_id))
@@ -66,11 +75,10 @@ def test_percentile_pruner_with_one_trial() -> None:
 
 
 @pytest.mark.parametrize(
-    "direction_value", [("minimize", [1, 2, 3, 4, 5], 2.1), ("maximize", [1, 2, 3, 4, 5], 3.9)]
+    "direction_value", [("minimize", [1, 2, 3, 4, 5], 2.1), ("maximize", [1, 2, 3, 4, 5], 3.9),]
 )
-def test_25_percentile_pruner_intermediate_values(
-    direction_value: Tuple[str, List[float], float]
-) -> None:
+def test_25_percentile_pruner_intermediate_values(direction_value):
+    # type: (Tuple[str, List[float], float]) -> None
 
     direction, intermediate_values, latest_value = direction_value
     pruner = optuna.pruners.PercentilePruner(25.0, 0, 0)
@@ -90,7 +98,8 @@ def test_25_percentile_pruner_intermediate_values(
     assert pruner.prune(study=study, trial=study._storage.get_trial(trial._trial_id))
 
 
-def test_25_percentile_pruner_intermediate_values_nan() -> None:
+def test_25_percentile_pruner_intermediate_values_nan():
+    # type: () -> None
 
     pruner = optuna.pruners.PercentilePruner(25.0, 0, 0)
     study = optuna.study.create_study()
@@ -116,9 +125,8 @@ def test_25_percentile_pruner_intermediate_values_nan() -> None:
 @pytest.mark.parametrize(
     "direction_expected", [(StudyDirection.MINIMIZE, 0.1), (StudyDirection.MAXIMIZE, 0.2)]
 )
-def test_get_best_intermediate_result_over_steps(
-    direction_expected: Tuple[StudyDirection, float]
-) -> None:
+def test_get_best_intermediate_result_over_steps(direction_expected):
+    # type: (Tuple[StudyDirection, float]) -> None
 
     direction, expected = direction_expected
 
@@ -164,8 +172,11 @@ def test_get_best_intermediate_result_over_steps(
     )
 
 
-def test_get_percentile_intermediate_result_over_trials() -> None:
-    def setup_study(trial_num: int, _intermediate_values: List[List[float]]) -> Study:
+def test_get_percentile_intermediate_result_over_trials():
+    # type: () -> None
+
+    def setup_study(trial_num, _intermediate_values):
+        # type: (int, List[List[float]]) -> Study
 
         _study = optuna.study.create_study(direction="minimize")
         trial_ids = [_study._storage.create_new_trial(_study._study_id) for _ in range(trial_num)]

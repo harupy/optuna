@@ -48,6 +48,9 @@ class BaseDistribution(object, metaclass=abc.ABCMeta):
     def single(self) -> bool:
         """Test whether the range of this distribution contains just a single value.
 
+        When this method returns :obj:`True`, :mod:`~optuna.samplers` always sample
+        the same value from the distribution.
+
         Returns:
             :obj:`True` if the range of this distribution contains just a single value,
             otherwise :obj:`False`.

@@ -1,7 +1,8 @@
 import optuna
 
 
-def test_nop_pruner() -> None:
+def test_nop_pruner():
+    # type: () -> None
 
     study = optuna.study.create_study()
     trial = optuna.trial.Trial(study, study._storage.create_new_trial(study._study_id))

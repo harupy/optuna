@@ -8,7 +8,8 @@ from optuna.testing.integration import create_running_trial
 from optuna.testing.integration import DeterministicPruner
 
 
-def test_xgboost_pruning_callback_call() -> None:
+def test_xgboost_pruning_callback_call():
+    # type: () -> None
 
     env = xgb.core.CallbackEnv(
         model="test",
@@ -34,8 +35,11 @@ def test_xgboost_pruning_callback_call() -> None:
         pruning_callback(env)
 
 
-def test_xgboost_pruning_callback() -> None:
-    def objective(trial: optuna.trial.Trial) -> float:
+def test_xgboost_pruning_callback():
+    # type: () -> None
+
+    def objective(trial):
+        # type: (optuna.trial.Trial) -> float
 
         dtrain = xgb.DMatrix(np.asarray([[1.0]]), label=[1.0])
         dtest = xgb.DMatrix(np.asarray([[1.0]]), label=[1.0])
@@ -61,8 +65,11 @@ def test_xgboost_pruning_callback() -> None:
     assert study.trials[0].value == 1.0
 
 
-def test_xgboost_pruning_callback_cv() -> None:
-    def objective(trial: optuna.trial.Trial) -> float:
+def test_xgboost_pruning_callback_cv():
+    # type: () -> None
+
+    def objective(trial):
+        # type: (optuna.trial.Trial) -> float
 
         dtrain = xgb.DMatrix(np.ones((2, 1)), label=[1.0, 1.0])
         params = {

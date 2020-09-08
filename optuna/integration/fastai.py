@@ -1,10 +1,12 @@
-from typing import Any
-
 import optuna
 from optuna._imports import try_import
+from optuna import type_checking
+
+if type_checking.TYPE_CHECKING:
+    from typing import Any  # NOQA
 
 with try_import() as _imports:
-    from fastai.basic_train import Learner
+    from fastai.basic_train import Learner  # NOQA
     from fastai.callbacks import TrackerCallback
 
 if not _imports.is_successful():
@@ -46,7 +48,8 @@ class FastAIPruningCallback(TrackerCallback):
             details.
     """
 
-    def __init__(self, learn: "Learner", trial: optuna.trial.Trial, monitor: str) -> None:
+    def __init__(self, learn, trial, monitor):
+        # type: (Learner, optuna.trial.Trial, str) -> None
 
         super(FastAIPruningCallback, self).__init__(learn, monitor)
 
@@ -54,7 +57,8 @@ class FastAIPruningCallback(TrackerCallback):
 
         self._trial = trial
 
-    def on_epoch_end(self, epoch: int, **kwargs: Any) -> None:
+    def on_epoch_end(self, epoch, **kwargs):
+        # type: (int, Any) -> None
 
         value = self.get_monitor_value()
         if value is None:

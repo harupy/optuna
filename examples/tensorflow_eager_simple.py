@@ -5,15 +5,26 @@ In this example, we optimize the validation accuracy of hand-written digit recog
 Tensorflow and MNIST. We optimize the neural network architecture as well as the optimizer
 configuration.
 
+We have the following two ways to execute this example:
+
+(1) Execute this code directly.
+    $ python tensorflow_eager_simple.py
+
+
+(2) Execute through CLI.
+    $ STUDY_NAME=`optuna create-study --direction maximize --storage sqlite:///example.db`
+    $ optuna study optimize tensorflow_eager_simple.py objective --n-trials=100 \
+      --study-name $STUDY_NAME --storage sqlite:///example.db
+
 """
 
-from packaging import version
+import pkg_resources
 import tensorflow as tf
 from tensorflow.keras.datasets import mnist
 
 import optuna
 
-if version.parse(tf.__version__) < version.parse("2.0.0"):
+if pkg_resources.parse_version(tf.__version__) < pkg_resources.parse_version("2.0.0"):
     raise RuntimeError("tensorflow>=2.0.0 is required for this example.")
 
 N_TRAIN_EXAMPLES = 3000

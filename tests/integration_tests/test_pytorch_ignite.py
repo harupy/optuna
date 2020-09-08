@@ -1,4 +1,3 @@
-from typing import Iterable
 from unittest.mock import patch
 
 from ignite.engine import Engine
@@ -7,10 +6,17 @@ import pytest
 import optuna
 from optuna.testing.integration import create_running_trial
 from optuna.testing.integration import DeterministicPruner
+from optuna import type_checking
+
+if type_checking.TYPE_CHECKING:
+    from typing import Iterable  # NOQA
 
 
-def test_pytorch_ignite_pruning_handler() -> None:
-    def update(engine: Engine, batch: Iterable) -> None:
+def test_pytorch_ignite_pruning_handler():
+    # type: () -> None
+
+    def update(engine, batch):
+        # type: (Engine, Iterable) -> None
 
         pass
 

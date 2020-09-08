@@ -1,12 +1,7 @@
 import copy
 from datetime import datetime
 import pickle
-from typing import Any  # NOQA
-from typing import Dict  # NOQA
-from typing import List  # NOQA
-from typing import Optional  # NOQA
 
-import optuna
 from optuna._experimental import experimental
 from optuna._imports import try_import
 from optuna import distributions
@@ -17,13 +12,18 @@ from optuna.study import StudyDirection
 from optuna.study import StudySummary
 from optuna.trial import FrozenTrial
 from optuna.trial import TrialState
-
-
-_logger = optuna.logging.get_logger(__name__)
+from optuna import type_checking
 
 
 with try_import() as _imports:
     import redis
+
+
+if type_checking.TYPE_CHECKING:
+    from typing import Any  # NOQA
+    from typing import Dict  # NOQA
+    from typing import List  # NOQA
+    from typing import Optional  # NOQA
 
 
 @experimental("1.4.0")
@@ -61,13 +61,15 @@ class RedisStorage(BaseStorage):
         Please execute ``$ pip install -U redis`` to install redis python library.
     """
 
-    def __init__(self, url: str) -> None:
+    def __init__(self, url):
+        # type: (str) -> None
 
         _imports.check()
 
         self._redis = redis.Redis.from_url(url)
 
-    def create_new_study(self, study_name: Optional[str] = None) -> int:
+    def create_new_study(self, study_name=None):
+        # type: (Optional[str]) -> int
 
         if study_name is not None and self._redis.exists(self._key_study_name(study_name)):
             raise exceptions.DuplicatedStudyError
@@ -105,11 +107,10 @@ class RedisStorage(BaseStorage):
             pipe.set(self._key_study_summary(study_id), pickle.dumps(study_summary))
             pipe.execute()
 
-        _logger.info("A new study created in Redis with name: {}".format(study_name))
-
         return study_id
 
-    def delete_study(self, study_id: int) -> None:
+    def delete_study(self, study_id):
+        # type: (int) -> None
 
         self._check_study_id(study_id)
 
@@ -135,35 +136,42 @@ class RedisStorage(BaseStorage):
             pipe.execute()
 
     @staticmethod
-    def _key_study_name(study_name: str) -> str:
+    def _key_study_name(study_name):
+        # type: (str) -> str
 
         return "study_name:{}:study_id".format(study_name)
 
     @staticmethod
-    def _key_study_summary(study_id: int) -> str:
+    def _key_study_summary(study_id):
+        # type: (int) -> str
 
         return "study_id:{:010d}:study_summary".format(study_id)
 
-    def _set_study_summary(self, study_id: int, study_summary: StudySummary) -> None:
+    def _set_study_summary(self, study_id, study_summary):
+        # type: (int, StudySummary) -> None
 
         self._redis.set(self._key_study_summary(study_id), pickle.dumps(study_summary))
 
-    def _get_study_summary(self, study_id: int) -> StudySummary:
+    def _get_study_summary(self, study_id):
+        # type: (int) -> StudySummary
 
         summary_pkl = self._redis.get(self._key_study_summary(study_id))
         assert summary_pkl is not None
         return pickle.loads(summary_pkl)
 
-    def _del_study_summary(self, study_id: int) -> None:
+    def _del_study_summary(self, study_id):
+        # type: (int) -> None
 
         self._redis.delete(self._key_study_summary(study_id))
 
     @staticmethod
-    def _key_study_direction(study_id: int) -> str:
+    def _key_study_direction(study_id):
+        # type: (int) -> str
 
         return "study_id:{:010d}:direction".format(study_id)
 
-    def set_study_direction(self, study_id: int, direction: StudyDirection) -> None:
+    def set_study_direction(self, study_id, direction):
+        # type: (int, StudyDirection) -> None
 
         self._check_study_id(study_id)
 
@@ -186,7 +194,8 @@ class RedisStorage(BaseStorage):
             pipe.set(self._key_study_summary(study_id), pickle.dumps(study_summary))
             pipe.execute()
 
-    def set_study_user_attr(self, study_id: int, key: str, value: Any) -> None:
+    def set_study_user_attr(self, study_id, key, value):
+        # type: (int, str, Any) -> None
 
         self._check_study_id(study_id)
 
@@ -194,7 +203,8 @@ class RedisStorage(BaseStorage):
         study_summary.user_attrs[key] = value
         self._set_study_summary(study_id, study_summary)
 
-    def set_study_system_attr(self, study_id: int, key: str, value: Any) -> None:
+    def set_study_system_attr(self, study_id, key, value):
+        # type: (int, str, Any) -> None
 
         self._check_study_id(study_id)
 
@@ -202,7 +212,8 @@ class RedisStorage(BaseStorage):
         study_summary.system_attrs[key] = value
         self._set_study_summary(study_id, study_summary)
 
-    def get_study_id_from_name(self, study_name: str) -> int:
+    def get_study_id_from_name(self, study_name):
+        # type: (str) -> int
 
         if not self._redis.exists(self._key_study_name(study_name)):
             raise KeyError("No such study {}.".format(study_name))
@@ -210,14 +221,16 @@ class RedisStorage(BaseStorage):
         assert study_id_pkl is not None
         return pickle.loads(study_id_pkl)
 
-    def get_study_id_from_trial_id(self, trial_id: int) -> int:
+    def get_study_id_from_trial_id(self, trial_id):
+        # type: (int) -> int
 
         study_id_pkl = self._redis.get("trial_id:{:010d}:study_id".format(trial_id))
         if study_id_pkl is None:
             raise KeyError("No such trial: {}.".format(trial_id))
         return pickle.loads(study_id_pkl)
 
-    def get_study_name_from_id(self, study_id: int) -> str:
+    def get_study_name_from_id(self, study_id):
+        # type: (int) -> str
 
         self._check_study_id(study_id)
 
@@ -226,21 +239,24 @@ class RedisStorage(BaseStorage):
             raise KeyError("No such study: {}.".format(study_id))
         return pickle.loads(study_name_pkl)
 
-    def get_study_direction(self, study_id: int) -> StudyDirection:
+    def get_study_direction(self, study_id):
+        # type: (int) -> StudyDirection
 
         direction_pkl = self._redis.get("study_id:{:010d}:direction".format(study_id))
         if direction_pkl is None:
             raise KeyError("No such study: {}.".format(study_id))
         return pickle.loads(direction_pkl)
 
-    def get_study_user_attrs(self, study_id: int) -> Dict[str, Any]:
+    def get_study_user_attrs(self, study_id):
+        # type: (int) -> Dict[str, Any]
 
         self._check_study_id(study_id)
 
         study_summary = self._get_study_summary(study_id)
         return copy.deepcopy(study_summary.user_attrs)
 
-    def get_study_system_attrs(self, study_id: int) -> Dict[str, Any]:
+    def get_study_system_attrs(self, study_id):
+        # type: (int) -> Dict[str, Any]
 
         self._check_study_id(study_id)
 
@@ -248,11 +264,13 @@ class RedisStorage(BaseStorage):
         return copy.deepcopy(study_summary.system_attrs)
 
     @staticmethod
-    def _key_study_param_distribution(study_id: int) -> str:
+    def _key_study_param_distribution(study_id):
+        # type: (int) -> str
 
         return "study_id:{:010d}:params_distribution".format(study_id)
 
-    def _get_study_param_distribution(self, study_id: int) -> Dict:
+    def _get_study_param_distribution(self, study_id):
+        # type: (int) -> Dict
 
         if self._redis.exists(self._key_study_param_distribution(study_id)):
             param_distribution_pkl = self._redis.get(self._key_study_param_distribution(study_id))
@@ -261,13 +279,15 @@ class RedisStorage(BaseStorage):
         else:
             return {}
 
-    def _set_study_param_distribution(self, study_id: int, param_distribution: Dict) -> None:
+    def _set_study_param_distribution(self, study_id, param_distribution):
+        # type: (int, Dict) -> None
 
         self._redis.set(
             self._key_study_param_distribution(study_id), pickle.dumps(param_distribution)
         )
 
-    def get_all_study_summaries(self) -> List[StudySummary]:
+    def get_all_study_summaries(self):
+        # type: () -> List[StudySummary]
 
         study_summaries = []
         study_ids = [pickle.loads(sid) for sid in self._redis.lrange("study_list", 0, -1)]
@@ -277,7 +297,8 @@ class RedisStorage(BaseStorage):
 
         return study_summaries
 
-    def create_new_trial(self, study_id: int, template_trial: Optional[FrozenTrial] = None) -> int:
+    def create_new_trial(self, study_id, template_trial=None):
+        # type: (int, Optional[FrozenTrial]) -> int
 
         self._check_study_id(study_id)
 
@@ -315,7 +336,8 @@ class RedisStorage(BaseStorage):
         return trial_id
 
     @staticmethod
-    def _create_running_trial() -> FrozenTrial:
+    def _create_running_trial():
+        # type: () -> FrozenTrial
 
         return FrozenTrial(
             trial_id=-1,  # dummy value.
@@ -331,7 +353,8 @@ class RedisStorage(BaseStorage):
             datetime_complete=None,
         )
 
-    def set_trial_state(self, trial_id: int, state: TrialState) -> bool:
+    def set_trial_state(self, trial_id, state):
+        # type: (int, TrialState) -> bool
 
         self._check_trial_id(trial_id)
         trial = self.get_trial(trial_id)
@@ -350,13 +373,8 @@ class RedisStorage(BaseStorage):
 
         return True
 
-    def set_trial_param(
-        self,
-        trial_id: int,
-        param_name: str,
-        param_value_internal: float,
-        distribution: distributions.BaseDistribution,
-    ) -> None:
+    def set_trial_param(self, trial_id, param_name, param_value_internal, distribution):
+        # type: (int, str, float, distributions.BaseDistribution) -> None
 
         self._check_trial_id(trial_id)
         self.check_trial_is_updatable(trial_id, self.get_trial(trial_id).state)
@@ -385,16 +403,19 @@ class RedisStorage(BaseStorage):
             pipe.set(self._key_trial(trial_id), pickle.dumps(trial))
             pipe.execute()
 
-    def get_trial_number_from_id(self, trial_id: int) -> int:
+    def get_trial_number_from_id(self, trial_id):
+        # type: (int) -> int
 
         return self.get_trial(trial_id).number
 
     @staticmethod
-    def _key_best_trial(study_id: int) -> str:
+    def _key_best_trial(study_id):
+        # type: (int) -> str
 
         return "study_id:{:010d}:best_trial_id".format(study_id)
 
-    def get_best_trial(self, study_id: int) -> FrozenTrial:
+    def get_best_trial(self, study_id):
+        # type: (int) -> FrozenTrial
 
         if not self._redis.exists(self._key_best_trial(study_id)):
             all_trials = self.get_all_trials(study_id, deepcopy=False)
@@ -417,7 +438,8 @@ class RedisStorage(BaseStorage):
 
         return best_trial
 
-    def _set_best_trial(self, study_id: int, trial_id: int) -> None:
+    def _set_best_trial(self, study_id, trial_id):
+        # type: (int, int) -> None
 
         with self._redis.pipeline() as pipe:
             pipe.multi()
@@ -428,12 +450,14 @@ class RedisStorage(BaseStorage):
             pipe.set(self._key_study_summary(study_id), pickle.dumps(study_summary))
             pipe.execute()
 
-    def get_trial_param(self, trial_id: int, param_name: str) -> float:
+    def get_trial_param(self, trial_id, param_name):
+        # type: (int, str) -> float
 
         distribution = self.get_trial(trial_id).distributions[param_name]
         return distribution.to_internal_repr(self.get_trial(trial_id).params[param_name])
 
-    def set_trial_value(self, trial_id: int, value: float) -> None:
+    def set_trial_value(self, trial_id, value):
+        # type: (int, float) -> None
 
         self._check_trial_id(trial_id)
         trial = self.get_trial(trial_id)
@@ -442,7 +466,8 @@ class RedisStorage(BaseStorage):
         trial.value = value
         self._redis.set(self._key_trial(trial_id), pickle.dumps(trial))
 
-    def _update_cache(self, trial_id: int) -> None:
+    def _update_cache(self, trial_id):
+        # type: (int) -> None
 
         trial = self.get_trial(trial_id)
         if trial.state != TrialState.COMPLETE:
@@ -470,9 +495,8 @@ class RedisStorage(BaseStorage):
 
         return
 
-    def set_trial_intermediate_value(
-        self, trial_id: int, step: int, intermediate_value: float
-    ) -> None:
+    def set_trial_intermediate_value(self, trial_id, step, intermediate_value):
+        # type: (int, int, float) -> None
 
         self._check_trial_id(trial_id)
         frozen_trial = self.get_trial(trial_id)
@@ -480,7 +504,8 @@ class RedisStorage(BaseStorage):
         frozen_trial.intermediate_values[step] = intermediate_value
         self._set_trial(trial_id, frozen_trial)
 
-    def set_trial_user_attr(self, trial_id: int, key: str, value: Any) -> None:
+    def set_trial_user_attr(self, trial_id, key, value):
+        # type: (int, str, Any) -> None
 
         self._check_trial_id(trial_id)
         trial = self.get_trial(trial_id)
@@ -488,7 +513,8 @@ class RedisStorage(BaseStorage):
         trial.user_attrs[key] = value
         self._set_trial(trial_id, trial)
 
-    def set_trial_system_attr(self, trial_id: int, key: str, value: Any) -> None:
+    def set_trial_system_attr(self, trial_id, key, value):
+        # type: (int, str, Any) -> None
 
         self._check_trial_id(trial_id)
         trial = self.get_trial(trial_id)
@@ -497,11 +523,13 @@ class RedisStorage(BaseStorage):
         self._set_trial(trial_id, trial)
 
     @staticmethod
-    def _key_trial(trial_id: int) -> str:
+    def _key_trial(trial_id):
+        # type: (int) -> str
 
         return "trial_id:{:010d}:frozentrial".format(trial_id)
 
-    def get_trial(self, trial_id: int) -> FrozenTrial:
+    def get_trial(self, trial_id):
+        # type: (int) -> FrozenTrial
 
         self._check_trial_id(trial_id)
 
@@ -509,11 +537,13 @@ class RedisStorage(BaseStorage):
         assert frozen_trial_pkl is not None
         return pickle.loads(frozen_trial_pkl)
 
-    def _set_trial(self, trial_id: int, trial: FrozenTrial) -> None:
+    def _set_trial(self, trial_id, trial):
+        # type: (int, FrozenTrial) -> None
 
         self._redis.set(self._key_trial(trial_id), pickle.dumps(trial))
 
-    def _del_trial(self, trial_id: int) -> None:
+    def _del_trial(self, trial_id):
+        # type: (int) -> None
 
         with self._redis.pipeline() as pipe:
             pipe.multi()
@@ -521,14 +551,16 @@ class RedisStorage(BaseStorage):
             pipe.delete("trial_id:{:010d}:study_id".format(trial_id))
             pipe.execute()
 
-    def _get_study_trials(self, study_id: int) -> List[int]:
+    def _get_study_trials(self, study_id):
+        # type: (int) -> List[int]
 
         self._check_study_id(study_id)
 
         study_trial_list_key = "study_id:{:010d}:trial_list".format(study_id)
         return [int(tid) for tid in self._redis.lrange(study_trial_list_key, 0, -1)]
 
-    def get_all_trials(self, study_id: int, deepcopy: bool = True) -> List[FrozenTrial]:
+    def get_all_trials(self, study_id, deepcopy=True):
+        # type: (int, bool) -> List[FrozenTrial]
 
         self._check_study_id(study_id)
 
@@ -543,7 +575,8 @@ class RedisStorage(BaseStorage):
         else:
             return trials
 
-    def get_n_trials(self, study_id: int, state: Optional[TrialState] = None) -> int:
+    def get_n_trials(self, study_id, state=None):
+        # type: (int, Optional[TrialState]) -> int
 
         self._check_study_id(study_id)
         if state is None:
@@ -554,7 +587,8 @@ class RedisStorage(BaseStorage):
     def read_trials_from_remote_storage(self, study_id: int) -> None:
         self._check_study_id(study_id)
 
-    def _check_study_id(self, study_id: int) -> None:
+    def _check_study_id(self, study_id):
+        # type: (int) -> None
 
         if not self._redis.exists("study_id:{:010d}:study_name".format(study_id)):
             raise KeyError("study_id {} does not exist.".format(study_id))

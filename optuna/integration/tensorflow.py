@@ -1,6 +1,9 @@
 import optuna
 from optuna._imports import try_import
 
+if optuna.type_checking.TYPE_CHECKING:
+    from typing import Optional  # NOQA
+
 with try_import() as _imports:
     import tensorflow as tf
     from tensorflow.estimator import SessionRunHook
@@ -29,13 +32,8 @@ class TensorFlowPruningHook(SessionRunHook):
            An interval to watch the summary file.
     """
 
-    def __init__(
-        self,
-        trial: optuna.trial.Trial,
-        estimator: "tf.estimator.Estimator",
-        metric: str,
-        run_every_steps: int,
-    ) -> None:
+    def __init__(self, trial, estimator, metric, run_every_steps):
+        # type: (optuna.trial.Trial, tf.estimator.Estimator, str, int) -> None
 
         _imports.check()
 
@@ -46,22 +44,19 @@ class TensorFlowPruningHook(SessionRunHook):
         self._global_step_tensor = None
         self._timer = tf.estimator.SecondOrStepTimer(every_secs=None, every_steps=run_every_steps)
 
-    def begin(self) -> None:
+    def begin(self):
+        # type: () -> None
 
         self._global_step_tensor = tf.compat.v1.train.get_global_step()
 
-    def before_run(
-        self, run_context: "tf.estimator.SessionRunContext"
-    ) -> "tf.estimator.SessionRunArgs":
+    def before_run(self, run_context):
+        # type: (tf.estimator.SessionRunContext) -> tf.estimator.SessionRunArgs
 
         del run_context
         return tf.estimator.SessionRunArgs(self._global_step_tensor)
 
-    def after_run(
-        self,
-        run_context: "tf.estimator.SessionRunContext",
-        run_values: "tf.estimator.SessionRunValues",
-    ) -> None:
+    def after_run(self, run_context, run_values):
+        # type: (tf.estimator.SessionRunContext, tf.estimator.SessionRunValues) -> None
 
         global_step = run_values.results
         # Get eval metrics every n steps.
